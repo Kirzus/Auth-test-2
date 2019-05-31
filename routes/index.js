@@ -1,5 +1,5 @@
 // Routes
-const user = require("./User/user")
+const user = require("./user/user")
 
 // Routes export
 module.exports = { user };

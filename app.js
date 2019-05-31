@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json());
 
 // Sending to the right routes
-app.use("/routes/User/user", routes.user)
+app.use("/user", routes.user)
 
 app.get("/", (req, res) => {
   res.send("Hi, I'm on the root '/'")
