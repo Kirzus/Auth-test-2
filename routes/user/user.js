@@ -22,7 +22,7 @@ router.post("/", (req, res) => {
             .send("There was a problem adding the information to the database.");
         return res.status(200).send(result)
     })
-});
+})
 
 // Returns all the users in the database
 router.get("/", (req, res) => {
