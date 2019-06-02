@@ -46,11 +46,23 @@ router.get("/:id", (req, res) => {
           throw res
             .status(500)
             .send("There was a problem finding the users.");
-        if (!user) return res.status(404).send("No user found.");
+        if (!user[0]) return res.status(404).send("No user found.");
         res.status(200).send(user);
     })
 })
 
+
+// DELETES ALL USERS
+router.delete("/", (req, res) => {
+    const sql = "DELETE FROM user";
+    connection.query(sql, (err, user) => {
+        if (err)
+          return res
+            .status(500)
+            .send("There was a problem deleting users.");
+        res.status(200).send("all users have been deleted")
+      });
+})
 
 // Deletes a single user in the database
 router.delete("/:id", (req, res) => {
@@ -61,7 +73,7 @@ router.delete("/:id", (req, res) => {
           return res
             .status(500)
             .send("There was a problem deleting the user.");
-        if (user.affectedRows === 0) return res.status(404).send(`No user found for id = ${userId}`)
+        if (!user[0]) return res.status(404).send(`No user found for id = ${userId}`)
         res.status(200).send("The user has been deleted: " + user.affectedRows)
       });
 })
