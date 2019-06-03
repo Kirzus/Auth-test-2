@@ -12,8 +12,10 @@ router.use(bodyParser.json());
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const config = require("../../config");
+const VerifyToken = require('./verifyToken');
 
 // Register a new user
+// Access: Public
 router.post("/register", function(req, res) {
     // Crypting entered password
     const hashedPassword = bcrypt.hashSync(req.body.password, 8);
@@ -39,6 +41,7 @@ router.post("/register", function(req, res) {
 });
 
 // Login a user
+// Access: Public
 router.post("/login", function(req, res) {
     // SQL Request, getting user via email
     const sql = "SELECT * FROM user WHERE email = ?";
@@ -59,11 +62,32 @@ router.post("/login", function(req, res) {
         const token = jwt.sign({ id: user[0].id }, config.secret, {
             expiresIn: 86400 // expires in 24 hours
         });
+
         res.header("Access-Control-Expose-Headers", "x-access-token")
         res.set("x-access-token", token)
-        
+
         res.status(200).send({ auth: true, token: token });
     });
+})
+
+// TEST PROTECTED ROUTE
+// Access: private
+router.get("/protected", VerifyToken, function(req, res, next) {
+    // SQL Request, getting user via id
+    const sql = "SELECT * FROM user WHERE id = ?";
+
+    connection.query(sql, req.id, (err, user) => {
+        if (err)
+        return res.status(500).send("There was a problem finding the user.");
+        if (!user[0]) return res.status(404).send("No user found.");
+        res.status(200).send(user);
+    });
+});
+
+// Log out a user
+// Access: ?
+router.get('/logout', function(req, res) {
+    res.status(200).send({ auth: false, token: null });
 });
 
 module.exports = router;

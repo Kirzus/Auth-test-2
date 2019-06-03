@@ -2,6 +2,8 @@ const express = require("express")
 const connection = require('../../helper/db')
 const router = express.Router();
 
+const VerifyToken = require('../Auth/verifyToken');
+
 // const bodyParser = require('body-parser');
 
 // router.use(bodyParser.urlencoded({ extended: false }));
@@ -37,7 +39,8 @@ router.get("/", (req, res) => {
 })
 
 // Gets a single user in the database
-router.get("/:id", (req, res) => {
+// Access: Private
+router.get("/:id", VerifyToken, (req, res) => {
     const sql = "SELECT * FROM user WHERE id = ?"
     const values = [req.params.id];
     connection.query(sql, values, (err, user) => {
