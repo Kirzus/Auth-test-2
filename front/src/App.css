@@ -23,3 +23,12 @@ form {
   display: flex;
   flex-direction: column;
 }
+
+.error-msg {
+  color: red;
+  margin: 0.5em;
+}
+
+.login-input {
+  width: 300px;
+}

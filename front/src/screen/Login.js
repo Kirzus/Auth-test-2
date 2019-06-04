@@ -9,7 +9,10 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 class Login extends Component {
   state = {
-    redirect: false
+    redirect: false,
+    error_msg: "",
+    error_email: "",
+    error_password: ""
   };
 
   onSubmit = (e) => {
@@ -20,17 +23,40 @@ class Login extends Component {
         password: e.target.password.value,
         email: e.target.email.value,
       })
-      .catch(error => {
-        console.log(error);
-      })
       .then(res => {
-        console.log(res)
-        localStorage.setItem("token", res.headers["x-access-token"])
-        console.log('token',localStorage.getItem("token"))
-        this.setState({
-          redirect : true
-        })
-      });
+        console.log(res);
+          localStorage.setItem("token", res.headers["x-access-token"]);
+          console.log("token", localStorage.getItem("token"));
+          this.setState({
+            redirect: true
+          });
+      })
+      .catch(error => {
+        console.log(error.response);
+        const emailDom = document.querySelector("#email")
+        const passwordDom = document.querySelector("#password")
+        
+        if (error.response.statusText === "Not Found") {
+          this.setState({
+            error_msg: error.response.data,
+            error_email: true,
+            error_password: false
+          });
+          // Resets email input
+          emailDom.value = ""
+          emailDom.focus() 
+        } else if (error.response.statusText === "Unauthorized") {
+          this.setState({
+            error_msg: error.response.data.error_msg,
+            error_email: false,
+            error_password: true
+          });
+           // Resets password input
+           passwordDom.value = ""
+           passwordDom.focus() 
+        }
+      })
+    
   }
 
   render() {
@@ -44,26 +70,31 @@ class Login extends Component {
       <form className="" noValidate autoComplete="off" onSubmit={this.onSubmit}>
         <TextField
           required
-          id="outlined-email-input"
+          
+          id="email"
           label="Email"
-          className=""
+          className="login-input"
           type="email"
           name="email"
           autoComplete="email"
           margin="normal"
           variant="outlined"
           autoFocus
+          error={this.state.error_email ? true : false}
         />
+        {this.state.error_email ? <p className="error-msg">* {this.state.error_msg}</p> : ""}
         <TextField
           required
           id="password"
           label="Password"
-          className=""
+          className="login-input"
           type="password"
           autoComplete="current-password"
           margin="normal"
           variant="outlined"
+          error={this.state.error_password ? true : false}
         />
+        {this.state.error_password ? <p className="error-msg">* {this.state.error_msg}</p> : ""}
         <FormControlLabel
           control={<Checkbox value="remember" color="primary" />}
           label="Remember me"
