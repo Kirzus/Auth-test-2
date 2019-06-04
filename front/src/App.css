@@ -18,3 +18,8 @@ form {
 .btn {
   margin-top: 1em !important;
 }
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}

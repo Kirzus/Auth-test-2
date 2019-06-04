@@ -2,6 +2,8 @@
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require('body-parser')
+const cors = require('cors');
+
 
 // Getting all routes from index
 const routes = require("./routes/index")
@@ -10,6 +12,7 @@ const routes = require("./routes/index")
 const app = express();
 
 app.use(morgan("dev"));
+app.use(cors());
 
 // Body Parser configuration
 app.use(bodyParser.urlencoded({extended: false}))

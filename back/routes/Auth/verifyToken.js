@@ -6,7 +6,7 @@ const verifyToken = (req, res, next) => {
   const token = req.headers['x-access-token'];
   if (!token) 
     return res.status(403).send({ auth: false, message: 'No token provided.' });
-
+  // console.log(req)
   // verifies secret and checks exp
   jwt.verify(token, config.secret, (err, decoded) => {      
     if (err) 
@@ -14,7 +14,7 @@ const verifyToken = (req, res, next) => {
 
     // if everything is good, save to request for use in other routes
     req.id = decoded.id;
-    console.log(req.id)
+    console.log(decoded)
 
     next();
   });

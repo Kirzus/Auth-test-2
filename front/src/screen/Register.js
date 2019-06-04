@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { NavLink } from 'react-router-dom';
+import { NavLink, Redirect } from 'react-router-dom';
+import axios from 'axios'
 
 // Material UI
 import TextField from "@material-ui/core/TextField";
@@ -8,11 +9,45 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Button from "@material-ui/core/Button";
 
 class Register extends Component {
-  state = {};
+  state = {
+    redirect: false
+  };
+
+  onSubmit = (e) => {
+    e.preventDefault();
+    console.log(e.target);
+    console.log(e.target.name.value);
+    console.log(e.target.password.value);
+    console.log(e.target.email.value);
+
+    axios
+      .post("http://localhost:3031/auth/register", {
+        name: e.target.name.value,
+        password: e.target.password.value,
+        email: e.target.email.value,
+        role: "user"
+      })
+      .catch(error => {
+        console.log(error);
+      })
+      .then(res => {
+        console.log(res)
+        this.setState({
+          redirect : true
+        })
+      });
+  }
+
   render() {
+    // State declaration
+    const { redirect } = this.state;
+    // When form submited, redirected to /login 
+    if (redirect) {
+      return <Redirect to="/login" />;
+    }
     return (
       <>
-        <form className="" noValidate>
+        <form className="" noValidate onSubmit={this.onSubmit}>
           <TextField
             name="name"
             variant="outlined"

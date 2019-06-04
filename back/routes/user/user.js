@@ -42,14 +42,15 @@ router.get("/", (req, res) => {
 // Access: Private
 router.get("/:id", VerifyToken, (req, res) => {
     const sql = "SELECT * FROM user WHERE id = ?"
-    const values = [req.params.id];
-    connection.query(sql, values, (err, user) => {
-        console.log(user)
+    // const values = [req.params.id];
+    connection.query(sql, req.id, (err, user) => {
         if (err)
           throw res
             .status(500)
             .send("There was a problem finding the users.");
+        if (Number(req.params.id) !== req.id) return res.status(401).send("User is unauthorized")
         if (!user[0]) return res.status(404).send("No user found.");
+        console.log(req.id)
         res.status(200).send(user);
     })
 })

@@ -27,14 +27,14 @@ router.post("/register", function(req, res) {
         if (err) throw res.status(500).send("There was a problem registering the user`.");
     
         // Create a token for user if registered without errors
-        const token = jwt.sign({ id: user.id }, config.secret, {
-            expiresIn: 86400 // expires in 24 hours
-        });
+        // const token = jwt.sign({ id: user.id }, config.secret, {
+        //     expiresIn: 86400 // expires in 24 hours
+        // });
     
         // Response
         res.status(200).send({
-            auth: true,
-            token: token,
+            // auth: true,
+            // token: token,
             user
         });
     });
