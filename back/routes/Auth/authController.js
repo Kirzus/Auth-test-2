@@ -41,7 +41,7 @@ router.post("/register", function(req, res) {
             expiresIn: 86400 // expires in 24 hours
         });
 
-        const url = `http://localhost:3000/confirmation/${token}`;
+        const url = `http://localhost:3000/confirm/${token}`;
 
         transporter.sendMail({
             to: req.body.email,
