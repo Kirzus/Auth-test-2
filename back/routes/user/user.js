@@ -3,10 +3,18 @@ const connection = require('../../helper/db')
 const router = express.Router();
 
 const VerifyToken = require('../Auth/verifyToken');
-
+const nodemailer = require('nodemailer')
 // const bodyParser = require('body-parser');
 
 // router.use(bodyParser.urlencoded({ extended: false }));
+
+const transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+});
 
 router.post("/", (req, res) => {
     console.log("req BODY", req.body)

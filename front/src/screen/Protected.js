@@ -38,6 +38,10 @@ class Protected extends Component {
       })
   }
 
+  logOut = () => {
+    localStorage.removeItem("token")
+  }
+
   render() {
     const { authorized } = this.state;
     if (!authorized) {
@@ -49,6 +53,7 @@ class Protected extends Component {
         <h2>Welcome {this.state.name} !</h2>
         <p>Your account email is: {this.state.email}</p>
         <p>Your role is: {this.state.role}</p>
+        <NavLink to='/login' onClick={this.logOut}>Log out</NavLink>
       </div>
     );
   }

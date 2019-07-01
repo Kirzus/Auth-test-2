@@ -8,11 +8,21 @@ const bodyParser = require("body-parser");
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
-// Authorization packages
+// Authentication packages
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const config = require("../../config");
+
 const VerifyToken = require('./verifyToken');
+const nodemailer = require('nodemailer')
+
+const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_PASS,
+    },
+  });
 
 // Register a new user
 // Access: Public
@@ -25,17 +35,24 @@ router.post("/register", function(req, res) {
     // Connecting to database
     connection.query(sql, values, (err, user) => {
         if (err) throw res.status(500).send("There was a problem registering the user`.");
-    
+        console.log(user);
         // Create a token for user if registered without errors
-        // const token = jwt.sign({ id: user.id }, config.secret, {
-        //     expiresIn: 86400 // expires in 24 hours
-        // });
+        const token = jwt.sign({ id: user.insertId, confirmed: false}, config.secret, {
+            expiresIn: 86400 // expires in 24 hours
+        });
+
+        const url = `http://localhost:3000/confirmation/${token}`;
+
+        transporter.sendMail({
+            to: req.body.email,
+            subject: 'Confirm Email',
+            html: `Please click this email to confirm your email: <a href="${url}">${url}</a>`,
+        });
     
         // Response
-        res.status(200).send({
-            // auth: true,
-            // token: token,
-            user
+        res.status(200).json({
+            token: token,
+            user: user
         });
     });
 });
@@ -59,7 +76,7 @@ router.post("/login", function(req, res) {
 
         // If user is found and password is valid
         // Create a token
-        const token = jwt.sign({ id: user[0].id }, config.secret, {
+        const token = jwt.sign({ id: user[0].id, role: user[0].role}, config.secret, {
             expiresIn: 86400 // expires in 24 hours
         });
 
@@ -80,6 +97,22 @@ router.get("/protected", VerifyToken, function(req, res, next) {
         if (err)
         return res.status(500).send("There was a problem finding the user.");
         if (!user[0]) return res.status(404).send("No user found.");
+        res.status(200).send(user);
+    });
+});
+
+router.put("/confirmation/:token", VerifyToken, function(req, res, next) {
+    // SQL Request, getting user via id
+    const sql = "UPDATE user SET isVerified = ? WHERE id = ?";
+    const values = [
+      true,
+      req.id
+    ];
+    console.log(req.id)
+    connection.query(sql, values, (err, user) => {
+        console.log(user)
+        if (err)
+        return res.status(500).send("There was a problem finding the user.");
         res.status(200).send(user);
     });
 });
